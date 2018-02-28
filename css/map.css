@@ -2,6 +2,14 @@
 /*.map {
 height:70%
 }*/
+body {
+    padding: 0;
+    margin: 0;
+}
+html, body {
+    height: 100%;
+    width: 100vw;
+}
 h2{
   text-align: center;
   padding-left: 2em;
@@ -10,19 +18,14 @@ h2{
   font-family: 'Quicksand', sans-serif;
   font-size: 18px;
 }
-body {
-    padding: 0;
-    margin: 0;
-}
-html, body, #map {
-    height: 100%;
-    width: 100vw;
-}
-#map-container {
+/*#map-container {
   width: auto;
   height: 100%;
-}
+}*/
 #map {
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   box-shadow: 0 0 10px rgba(0,0,0,0.5);
   z-index: 1;
 }
