@@ -10,10 +10,10 @@ h2{
   font-family: 'Quicksand', sans-serif;
   font-size: 18px;
 }
-/*#map-container {
+#map-container {
   width: auto;
   height: 100%;
-}*/
+}
 #map {
   left: 0;
   width: 100vw;
