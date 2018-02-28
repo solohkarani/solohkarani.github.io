@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>GeoCollector</title>
+        <!--fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Maven+Pro|Quicksand:700" rel="stylesheet"> 
+        <!--jquery-->
+        <script   src="https://code.jquery.com/jquery-2.2.3.min.js"   integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="   crossorigin="anonymous"></script>
+        <!--Bootstrap for form-->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+        <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js'></script>
+        <!--leaflet-->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/leaflet.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/leaflet.js"></script>
+        <!--Location Plugin-->
+        <script src='https://cdn.jsdelivr.net/leaflet.locatecontrol/0.49.0/L.Control.Locate.min.js'></script>
+        <link href='https://cdn.jsdelivr.net/leaflet.locatecontrol/0.49.0/L.Control.Locate.css' rel='stylesheet' />
+        <!--Tabletop and GeoJson-->
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/tabletop.js/1.5.1/tabletop.min.js'></script>
+        <script src="js/geojson.js"></script>
+        <!--Fonts-->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.2/css/font-awesome.min.css">
+        <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,900' rel='stylesheet' type='text/css'>
+        <!--style-->
+        <link href='css/map.css' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="modal fade" id="featureModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button class="close" type="button" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title text-primary" id="feature-title"></h4>
+                    </div>
+                    <div class="modal-body" id="feature-info"></div>
+                    <!-- <canvas id="doughnut-chart" width="auto" height="auto"></canvas>-->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-warning" data-dismiss="modal">Live</button>
+                        <button type="submit" id="submit" class="btn btn-success">Share</button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+        <div id="container">
+            <div id="map-container">
+                <div class="map">
+                    <div id="map">
+                        <script>
+                            var map = L.map('map'); //Initialize the map
+                            /////////////////////////
+                            //--EDIT THESE FIELDS--//
+                            var formId = '13s6ktEmMw7-Ra5DjR2Nyn5V-SPv-YC9jMZkYGeTP2vw';
+                            var formLat = '1339700078';
+                            var formLng = '407609333';
+                            var formText = '1201491929';
+                            var formType = '396682710';
+                            var staffName = '162959381';
+                            var staffContact = '267621120';
+                            var gsheet = '2PACX-1vSa3NzZOucpxOIb3cTHAw6GRaNhuUuCtTfFzUpJcy7P51Nk7wdb8KvBdlVgrdSWDOJs_vkNG4tOJMaR';
+                            //--STOP EDITING-------//
+                            ////////////////////////
+                            var pointAdded = 0;
+                            //Add a basemap
+                            var OpenStreetMap_Mapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                maxZoom: 19,
+                                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                            }).addTo(map);
+                            //Add Location Options - override the plugin default popup and circle
+                            var locOptions = {
+                                drawCircle: true,
+                                showPopup: false,
+                                follow:true,
+                                locateOptions: { enableHighAccuracy: true }
+                            };
+                            //Add Location
+                            var loc = L.control.locate(locOptions).addTo(map);
+                            //Endable Location at page load and do things once the location is found
+                            loc.start();
+                            var circleIcon = L.Icon.extend({
+                                options: {
+                                    iconSize:     [18, 18],
+                                }
+                            });
+                            var redIcon = new circleIcon({
+                                iconUrl: 'https://icograms.com/blocks/markers/marker_point.svg',
+                                /*shadowUrl: 'http://leafletjs.com/examples/custom-icons/leaf-shadow.png'*/
+                            }) 
+                            var marker = L.marker();
+                            var circle = L.circle();
+                            var lat, lng; //create variables used throughout the map
+                            function collectData(e) {
+                                if (map.hasLayer(circle)) {
+                                    map.removeLayer(circle);
+                                }
+                                //console.log(e);
+                                lat = e.latlng.lat;
+                                lng = e.latlng.lng;
+                                var accr = 100;
+                                if (e.accuracy) {
+                                    var radius = (e.accuracy / 2) /** 3.28084*/;
+                                    circle = L.circle(e.latlng, radius).addTo(map);
+                                    accr = e.accuracy /** 3.28084*/;
+                                }
+                                var form = '<h2>GeoCollector Form</h2> <div id="formdiv"><form role="form" id="projectform"><div class="form-group"><div class="form-group"><label for="description" class="requiredField">Facility Name</label><input class="form-control" rows="1" id="descrip" placeholder="name this facility"></div> </div> <label>Facility Type</label><div class="form-group"><input class="form-control" rows="1" id="type" placeholder="type of facility"></div>  <label>Staff Name</label><div class="form-group"><input class="form-control" rows="1" id="staff" placeholder="your name"></div>  <label>Staff Contact</label><div class="form-group"><input class="form-control" rows="1" id="contact" placeholder="your contact"></div>  <em class="text-muted">Click submit to add a point at this location.<hr>Accuracy: ' + accr.toFixed(2) + 'meters</em><div id="formHelp"></div><hr /><button type="submit" id="submit" class="btn btn-info btn-sm">Submit</button> <button type="reset" class="btn btn-warning btn-sm value="Reset">Clear</button></form></div>';
+                                marker = L.marker(e.latlng).addTo(map)
+                                    .bindPopup(form, {maxWidth:1000});
+                                //if you try and open the popup right away the location may not be ready, eventhough it's firing after locationfound
+                                setTimeout(function() {
+                                    marker.openPopup();
+                                    loc.stop();
+                                }, 200);
+                                marker.on('popupopen', function() {
+                                    pointAdded = 0;
+                                    $('#projectform').submit(function(event) {
+                                        event.preventDefault();
+                                        var facType = $('#type').val();
+                                        var yourName = $('#staff').val();
+                                        var yourContact = $('#contact').val();
+                                        var descrip = $('#descrip').val();
+                                        //console.log(descrip);
+                                        if (descrip) {
+                                            pointAdded = 1;
+                                            //console.log(descrip);
+                                            $('#formdiv').html('<iframe src="https://docs.google.com/forms/d/' + formId + '/formResponse?entry.' + formLat + '=' + lat + '&entry.' + formLng + '=' + lng + '&entry.'+ formText + '=' + descrip + '&entry.'+ formType + '=' + facType + '&entry.'+ staffName + '=' + yourName + '&entry.'+ staffContact + '=' + yourContact + '&submit=Submit" seamless scrolling="no" style="height:200px;width:100%;border:lightgray solid thin;"></iframe>');
+                                        } else {
+                                            $('#formHelp').html('<span style="color:red;">Please enter a description of your point.</span>')
+                                        }
+                                    });
+                                });
+                                if (marker) {
+                                    marker.on('popupclose', function() {
+                                        map.removeLayer(marker);
+                                        if (pointAdded == 0) {
+                                            getPoints();
+                                        }
+                                        if (map.hasLayer(circle)) {
+                                            map.removeLayer(circle);
+                                        }
+                                    });
+                                }
+                            }//end collect data
+                            map.on('locationfound', function(e) {
+                                collectData(e);
+                            });
+                            setTimeout(function() {
+                                if(lat) {
+                                    return false;
+                                }else{
+                                    console.log('no loc');
+                                    loc.stop();
+                                    map.setView([-0.1, 36.8], 10);
+                                    alert('No location found')
+                                }
+                            }, 10000);
+                            map.on('click', function(e) {
+                                collectData(e);
+                            });
+                            var markerArray = [];
+                            // map google data
+                            getGoogleData();
+                            /* });*/
+                            function getGoogleData()
+                            {
+                                var spreadsheetID = '1uiTifgfnVOlvh4eTutytLhlzCSXOhW5uCdkl6lL-pOI';
+                                var worksheetID = 'o2zldox';
+                                var url = 'https://spreadsheets.google.com/feeds/list/'+spreadsheetID+'/'+worksheetID+'/public/values?alt=json';
+                                console.log(url);
+                                var IconStyleOne = L.icon({
+                                    iconUrl: 'https://icograms.com/blocks/markers/marker_point.svg',
+                                    iconSize: [30, 30],
+                                    color: 'blue'
+                                });
+                                var IconStyleTwo = L.icon({
+                                    iconUrl: 'https://icograms.com/blocks/markers/square.svg',
+                                    riseOnHover: true
+                                });
+                                $.getJSON(url,function(data){
+                                    $.each(data.feed.entry,function(i,val){
+                                        // assign parameters for mapping and infowindow
+                                        // note that this will be different depending on header titles
+                                        var lng = val.gsx$longitude.$t;
+                                        var lat = val.gsx$latitude.$t;
+                                        var title = val.gsx$facilityname.$t;
+                                        var content = val.gsx$facilitytype.$t;
+                                        var colName = val.gsx$yourname.$t;
+                                        var colContact = val.gsx$yourcontact.$t;
+                                        var thisMarker = L.marker([lat,lng], {icon: redIcon}).addTo(map);
+                                        /*.bindPopup('<h2>' + title + '</h2>' + content + '<br>' + colName + '<br>' + colContact);*/
+                                        var popupInfo = "<table class='table table-striped table-bordered table-condensed'>" + "<tr><th>Latitude</th><td>" + lat + "</td></tr>" + "<tr><th>Longitude</th><td>" + lng + "</td></tr>" + "<tr><th>Facility Name</th><td>" + title + "</td></tr>" + "<tr><th>Facility Type</th><td>" + content + "</td></tr>"+ "<tr><th>Officer's Name</th><td>" + colName + "</td></tr>" + "<tr><th>Officer's Contact</th><td>" + colContact + "</td></tr>" + "<table>";
+                                        thisMarker.on({
+                                            click: function (e) {
+                                                $("#feature-title").html(title);
+                                                $("#feature-info").html(popupInfo);
+                                                $("#featureModal").modal("show");
+                                            },
+                                            mouseover: function (e){
+                                                thisMarker.setIcon(IconStyleOne)
+                                            },
+                                            mouseout: function (e){
+                                                thisMarker.setIcon(redIcon)
+                                            }
+                                        });
+                                        // push marker into an array
+                                        markerArray.push(thisMarker);
+                                    });
+                                    // put markers into a group to 
+                                    var group = L.featureGroup(markerArray).addTo(map);
+                                    map.fitBounds(group.getBounds());
+                                })
+                            }
+                            //Add form response points
+                            //Add an empty geojson layer for the google sheet points and create the popup
+                            var gps = new L.geoJson(null, {
+                                onEachFeature: function(feature, layer) {
+                                    layer.bindPopup(feature.properties.Longitude)
+                                }
+                            });
+                            function getPoints() {
+                                gps.clearLayers();
+                                //Grab the google sheet data using tabletop - published to the web not just shared - and use geojson.min.js to convert into proper geojson format
+                                var tabletop = Tabletop.init( {
+                                    key: gsheet,
+                                    simpleSheet: true,
+                                    parseNumbers: true,
+                                    callback: function(data, tabletop) {
+                                        var gpsData = GeoJSON.parse(data, {Point: ['Latitude', 'Longitude']});
+                                        //add that data to the geojson layer created earlier
+                                        gps.addData(gpsData);
+                                        gps.addTo(map);
+                                    },
+                                });
+                            }
+                            getPoints();
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

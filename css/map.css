@@ -1,0 +1,77 @@
+/**{font-family: 'Source Sans Pro', sans-serif;}*/
+/*.map {
+height:70%
+}*/
+h2{
+  text-align: center;
+  padding-left: 2em;
+  padding-right: 2em;
+  background-color: lightskyblue;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 18px;
+}
+#map-container {
+  width: auto;
+  height: 100%;
+}
+#map {
+  left: 0;
+  width: 100vw;
+  height: 99vh;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  z-index: 1;
+}
+#mG61Hd{
+  font-size:12px;
+}
+.freebirdFormviewerViewHeaderTitle{
+  font-size:10px;
+}
+.leaflet-popup-content {
+  font-size: small;
+}
+.form-group{
+  width:250px;
+  margin-bottom:0;
+}
+.form-control{
+  resize:none;
+}
+.text-muted{
+  font-size:smaller;
+}
+hr {
+  margin: 5px 0;
+}
+.leaflet-gpsControl{
+  font-size:1em;
+  padding:0px 5px;
+}
+.leaflet-popup-content-wrapper {
+  background-color: rgba(255,255,255,0.8);
+  border-radius: 2px;
+  font-family: 'Quicksand', sans-serif;
+}
+
+.leaflet-popup-content-wrapper .leaflet-popup-content {
+  margin: 0.5em
+}
+
+.leaflet-container a.leaflet-popup-close-button {
+	position: absolute;
+	top: 0;
+	right: 0;
+	padding: 4px 4px 0 0;
+	border: none;
+	text-align: center;
+	width: 18px;
+	height: 14px;
+	color: #c3c3c3;
+	text-decoration: none;
+	font-weight: bold;
+	background: transparent;
+	}
+.leaflet-container a.leaflet-popup-close-button:hover {
+	color: red;
+	}
+
