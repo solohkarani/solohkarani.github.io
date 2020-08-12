@@ -49,6 +49,7 @@
                 <div class="map">
                     <div id="map">
                         <script>
+				window.googleDocCallback = function () { return true; };
                             var map = L.map('map'); //Initialize the map
                             /////////////////////////
                             //--EDIT THESE FIELDS--//
