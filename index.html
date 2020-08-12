@@ -249,7 +249,32 @@
 		"Streets": Streets
 	};
                             L.control.layers(baseLayers, null).addTo(map);
-                            
+                             //set the color style
+                            function lgaStyle(feature) {
+                                return {
+                                    fillColor: "#85C1E9",
+                                    fillOpacity: 0.0,
+                                    weight: 3,
+                                    color: '#FF0000',
+                                };
+                            };
+
+                            //admin boundary geojson
+                            var lga_boundary = new L.geoJson(lga_boundary, {
+                                style: lgaStyle,
+                            });
+
+                            lga_boundary.addTo(map);
+
+                            $.ajax({
+                                dataType: "json",
+                                url: "data/planboundary.geojson",
+                                success: function (data) {
+                                    $(data.features).each(function (key, data) {
+                                        lga_boundary.addData(data);
+                                    });
+                                }
+                            }).error(function () {});
                         </script>
                     </div>
                 </div>
