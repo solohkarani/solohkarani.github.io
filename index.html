@@ -57,7 +57,7 @@
                             var formLng = '407609333';
                             var formText = '1201491929';
                             var formType = '396682710';
-                            var staffName = '162959381';
+                                var staffName = '162959381';
                             var staffContact = '267621120';
                             var gsheet = '2PACX-1vSa3NzZOucpxOIb3cTHAw6GRaNhuUuCtTfFzUpJcy7P51Nk7wdb8KvBdlVgrdSWDOJs_vkNG4tOJMaR';
                             //--STOP EDITING-------//
@@ -104,7 +104,7 @@
                                     circle = L.circle(e.latlng, radius).addTo(map);
                                     accr = e.accuracy /** 3.28084*/;
                                 }
-                                var form = '<h2>GeoCollector Form</h2> <div id="formdiv"><form role="form" id="projectform"><div class="form-group"><div class="form-group"><label for="description" class="requiredField">Facility Name</label><input class="form-control" rows="1" id="descrip" placeholder="name this facility"></div> </div> <label>Facility Type</label><div class="form-group"><input class="form-control" rows="1" id="type" placeholder="type of facility"></div>  <label>Staff Name</label><div class="form-group"><input class="form-control" rows="1" id="staff" placeholder="your name"></div>  <label>Staff Contact</label><div class="form-group"><input class="form-control" rows="1" id="contact" placeholder="your contact"></div>  <em class="text-muted">Click submit to add a point at this location.<hr>Accuracy: ' + accr.toFixed(2) + 'meters</em><div id="formHelp"></div><hr /><button type="submit" id="submit" class="btn btn-info btn-sm">Submit</button> <button type="reset" class="btn btn-warning btn-sm value="Reset">Clear</button></form></div>';
+                                var form = '<h2>GeoCollector Form</h2> <div id="formdiv"><form role="form" id="projectform"><div class="form-group"><div class="form-group"><label for="description" class="requiredField">Facility Name</label><input class="form-control" rows="1" id="descrip" placeholder="name this facility"></div> </div> <label>Facility Type</label><div class="form-group"><input class="form-control" rows="1" id="type" placeholder="type of facility"></div>  <label>Main Attribute</label><div class="form-group"><input class="form-control" rows="1" id="staff" placeholder="your name"></div>  <label>Other Info</label><div class="form-group"><input class="form-control" rows="1" id="contact" placeholder="your contact"></div>  <em class="text-muted">Click submit to add a point at this location.<hr>Accuracy: ' + accr.toFixed(2) + 'meters</em><div id="formHelp"></div><hr /><button type="submit" id="submit" class="btn btn-info btn-sm">Submit</button> <button type="reset" class="btn btn-warning btn-sm value="Reset">Clear</button></form></div>';
                                 marker = L.marker(e.latlng).addTo(map)
                                     .bindPopup(form, {maxWidth:1000});
                                 //if you try and open the popup right away the location may not be ready, eventhough it's firing after locationfound
