@@ -18,13 +18,14 @@
         <script src='https://cdn.jsdelivr.net/leaflet.locatecontrol/0.49.0/L.Control.Locate.min.js'></script>
         <link href='https://cdn.jsdelivr.net/leaflet.locatecontrol/0.49.0/L.Control.Locate.css' rel='stylesheet' />
         <!--Tabletop and GeoJson-->
-        <script src='https://cdnjs.cloudflare.com/ajax/libs/tabletop.js/1.5.1/tabletop.min.js'></script>
+        <script src='https://cdn.jsdelivr.net/npm/tabletop@1.6.3/src/tabletop.min.js'></script>
         <script src="js/geojson.js"></script>
         <!--Fonts-->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.2/css/font-awesome.min.css">
         <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,900' rel='stylesheet' type='text/css'>
         <!--style-->
         <link href='css/map.css' rel='stylesheet' type='text/css'>
+	    <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
     </head>
     <body>
         <div class="modal fade" id="featureModal" tabindex="-1" role="dialog">
@@ -49,6 +50,7 @@
                 <div class="map">
                     <div id="map">
                         <script>
+				window.googleDocCallback = function () { return true; };
                             var map = L.map('map'); //Initialize the map
                             /////////////////////////
                             //--EDIT THESE FIELDS--//
@@ -57,7 +59,7 @@
                             var formLng = '407609333';
                             var formText = '1201491929';
                             var formType = '396682710';
-                            var staffName = '162959381';
+                                var staffName = '162959381';
                             var staffContact = '267621120';
                             var gsheet = '2PACX-1vSa3NzZOucpxOIb3cTHAw6GRaNhuUuCtTfFzUpJcy7P51Nk7wdb8KvBdlVgrdSWDOJs_vkNG4tOJMaR';
                             //--STOP EDITING-------//
@@ -67,7 +69,15 @@
                             var OpenStreetMap_Mapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                                 maxZoom: 19,
                                 attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                            }).addTo(map);
+                            });
+                            var satellite =  L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',{
+    maxZoom: 20,
+    subdomains:['mt0','mt1','mt2','mt3']
+}).addTo(map);
+                                var Streets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
+    maxZoom: 20,
+    subdomains:['mt0','mt1','mt2','mt3']
+});
                             //Add Location Options - override the plugin default popup and circle
                             var locOptions = {
                                 drawCircle: true,
@@ -104,7 +114,7 @@
                                     circle = L.circle(e.latlng, radius).addTo(map);
                                     accr = e.accuracy /** 3.28084*/;
                                 }
-                                var form = '<h2>GeoCollector Form</h2> <div id="formdiv"><form role="form" id="projectform"><div class="form-group"><div class="form-group"><label for="description" class="requiredField">Facility Name</label><input class="form-control" rows="1" id="descrip" placeholder="name this facility"></div> </div> <label>Facility Type</label><div class="form-group"><input class="form-control" rows="1" id="type" placeholder="type of facility"></div>  <label>Staff Name</label><div class="form-group"><input class="form-control" rows="1" id="staff" placeholder="your name"></div>  <label>Staff Contact</label><div class="form-group"><input class="form-control" rows="1" id="contact" placeholder="your contact"></div>  <em class="text-muted">Click submit to add a point at this location.<hr>Accuracy: ' + accr.toFixed(2) + 'meters</em><div id="formHelp"></div><hr /><button type="submit" id="submit" class="btn btn-info btn-sm">Submit</button> <button type="reset" class="btn btn-warning btn-sm value="Reset">Clear</button></form></div>';
+                                var form = '<h2>GeoCollector Form</h2> <div id="formdiv"><form role="form" id="projectform"><div class="form-group"><div class="form-group"><label for="description" class="requiredField">Facility Name</label><input class="form-control" rows="1" id="descrip" placeholder="name this facility"></div> </div> <label>Facility Type</label><div class="form-group"><input class="form-control" rows="1" id="type" placeholder="type of facility"></div>  <label>Main Attribute</label><div class="form-group"><input class="form-control" rows="1" id="staff" placeholder="your name"></div>  <label>Other Info</label><div class="form-group"><input class="form-control" rows="1" id="contact" placeholder="your contact"></div>  <em class="text-muted">Click submit to add a point at this location.<hr>Accuracy: ' + accr.toFixed(2) + 'meters</em><div id="formHelp"></div><hr /><button type="submit" id="submit" class="btn btn-info btn-sm">Submit</button> <button type="reset" class="btn btn-warning btn-sm value="Reset">Clear</button></form></div>';
                                 marker = L.marker(e.latlng).addTo(map)
                                     .bindPopup(form, {maxWidth:1000});
                                 //if you try and open the popup right away the location may not be ready, eventhough it's firing after locationfound
@@ -234,6 +244,37 @@
                                 });
                             }
                             getPoints();
+                            var baseLayers = {
+		"Satellite": satellite,
+		"Streets": Streets
+	};
+                            L.control.layers(baseLayers, null).addTo(map);
+                             //set the color style
+                            function lgaStyle(feature) {
+                                return {
+                                    fillColor: "#85C1E9",
+                                    fillOpacity: 0.0,
+                                    weight: 3,
+                                    color: '#FF0000',
+                                };
+                            };
+
+                            //admin boundary geojson
+                            var lga_boundary = new L.geoJson(lga_boundary, {
+                                style: lgaStyle,
+                            });
+
+                            lga_boundary.addTo(map);
+
+                            $.ajax({
+                                dataType: "json",
+                                url: "data/planboundary.geojson",
+                                success: function (data) {
+                                    $(data.features).each(function (key, data) {
+                                        lga_boundary.addData(data);
+                                    });
+                                }
+                            }).error(function () {});
                         </script>
                     </div>
                 </div>
