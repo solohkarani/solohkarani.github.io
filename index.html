@@ -95,7 +95,7 @@
                                 }
                             });
                             var redIcon = new circleIcon({
-                                iconUrl: 'https://icograms.com/blocks/markers/marker_point.svg',
+                                iconUrl: 'img/marker_point.svg',
                                 /*shadowUrl: 'http://leafletjs.com/examples/custom-icons/leaf-shadow.png'*/
                             }) 
                             var marker = L.marker();
@@ -179,12 +179,12 @@
                                 var url = 'https://spreadsheets.google.com/feeds/list/'+spreadsheetID+'/'+worksheetID+'/public/values?alt=json';
                                 console.log(url);
                                 var IconStyleOne = L.icon({
-                                    iconUrl: 'https://icograms.com/blocks/markers/marker_point.svg',
+                                    iconUrl: 'img/marker_point.svg',
                                     iconSize: [30, 30],
                                     color: 'blue'
                                 });
                                 var IconStyleTwo = L.icon({
-                                    iconUrl: 'https://icograms.com/blocks/markers/square.svg',
+                                    iconUrl: 'img/marker_point.svg',
                                     riseOnHover: true
                                 });
                                 $.getJSON(url,function(data){
